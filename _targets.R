@@ -41,7 +41,7 @@ targets_notebook <- list(
   tar_file(
     book_index,
     {
-      file.copy(notebook, "docs/index.html")
+      file.copy(notebook, "docs/index.html", overwrite = TRUE)
       "docs/index.html"
     }
   ),
