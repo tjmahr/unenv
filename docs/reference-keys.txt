@@ -1,2 +1,12 @@
-nov.-1-2021-demo-entry
+november-2021
+onenote-archive
+added-variable-plots-2019-05-14
+r-3.6.0-released-2019-04-26
+standardized-gamma-distributions-2019-04-18
+jaccard-similarity-2019-03-14
+phylogenetic-regression-2019-02-26
+multicomp-2019-02-25
+rolling-list-of-bookmarks-2019-10-01
+i-had-these-quotes-in-the-old-notes
+colophon
 references

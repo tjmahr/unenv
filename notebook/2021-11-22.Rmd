@@ -1,0 +1,16 @@
+<!--- Timestamp to trigger book rebuilds: `r Sys.time()` --->
+
+```{r setup, include = FALSE}
+# library(tidyverse)
+# fit <- targets::tar_read(fit)
+# fit
+```
+
+## November 2021
+
+<small>Source: <code>`r knitr::current_input()`</code></small>
+
+**Base graphics in knitr**. I learned while porting over some old notes
+that `par()` options are not preserved between knitr chunks unless
+`opts_knit$get("global.par")` is `TRUE`. It's `FALSE` by default. No
+funny business using `old <- par(...)`
