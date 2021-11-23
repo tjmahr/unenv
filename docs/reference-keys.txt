@@ -1,4 +1,5 @@
 november-2021
+the-gaussian-kde-is-a-sum-of-baby-gaussians
 onenote-archive
 added-variable-plots-2019-05-14
 r-3.6.0-released-2019-04-26
