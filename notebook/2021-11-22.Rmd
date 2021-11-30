@@ -10,17 +10,37 @@
 
 <small>Source: <code>`r knitr::current_input()`</code></small>
 
-
+### Quick hits
 
 **Base graphics in knitr**. I learned while porting over some old notes
 that `par()` options are not preserved between knitr chunks unless
 `opts_knit$get("global.par")` is `TRUE`. It's `FALSE` by default. No
 funny business using `old <- par(...)`
 
-Paul recommended using Frank Harrel's `rms::orm()` function for ordinal
+**Sampling a swimming pool depth.** Jorbs on his Slay the Spire stream
+commented problems with big data. He used [a nice
+analogy](https://www.youtube.com/watch?v=kHS-tFnJKqA&t=5712s) for
+sampling bias. Imagine you have a swimming pool and we can't see the
+bottom of it. We want to measure the average depth of it. No amount of
+big data will accurately estimate the depth with all the samples come
+from the shallow end of the pool. But if you smartly sample the pool
+with a grid of points, then you can come up with an accurate estimate
+from relatively few points. This example is nice because it can
+illustrate accuracy versus precision.
+
+The analogy also funnily resembles an analogy used for Hamilitonian
+Monte Carlo: a puck skating around a smooth curved surface. If the pool
+is the posterior distribution and the depth is the negative log
+posterior density, then we want to explore that pool too. 
+
+***
+
+Paul recommended using Frank Harrell's `rms::orm()` function for ordinal
 regression.
 
-**`eval()` is stack inconsistent**. `base::eval()` and `rlang::eval_bare()` [do things differently](https://rlang.r-lib.org/reference/eval_bare.html).
+### `eval()` is stack inconsistent (whatever that means)
+
+`base::eval()` and `rlang::eval_bare()` [do things differently](https://rlang.r-lib.org/reference/eval_bare.html).
 
 Here are the examples from `?eval_bare()`
 
@@ -138,3 +158,67 @@ ggplot(d) +
   labs(color = NULL)
 ```
 
+### Using closures to make 16 related functions
+
+The [R Open Sci
+newsletter](https://ropensci.org/blog/2021/11/30/ropensci-news-digest-november-2021/#function-specific-and-package-specific-environments)
+linked to [a mailing list
+thread](https://www.mail-archive.com/r-package-devel@r-project.org/msg07413.html)
+about how to stash data inside of an R package.
+
+Duncan Murdoch suggests using a function factory to create closures that
+can access data in the parent environment.
+
+> Your `local()` call can create several functions and return them in a
+> list; then just those functions have access to the local variables.
+> For example,
+> 
+> ```r
+> createFns <- function() {
+> 
+>    .fooInfo <- NULL
+> 
+>    fn1 <- function (...) { ... }
+>    fn2 <- function (...) { ... }
+> 
+>    list(fn1 = fn1, fn2 = fn2)
+> }
+> 
+> fns <- createFns()
+> fn1 <- fns$fn1
+> fn2 <- fns$fn2
+> ```
+> 
+> Now `fn1` and `fn2` are functions that can see `.fooInfo`, and nobody
+> else can (without going through contortions).
+
+(I had to fix the code to create a real function factory.) 
+
+Then Martin Mächler replies to say yup, this is what we do in base R.
+
+> Note that the above approach has been how `nls()` has been
+> implemented for R ... a very long time ago {before R 1.0.0}
+> 
+> e.g. from  `example(nls)`:
+> 
+> ```{r}
+> DNase1 <- subset(DNase, Run == 1)
+> fm1 <- nls(density ~ SSlogis(log(conc), Asym, xmid, scal), DNase1)
+> str(fm1$m)
+> 
+> # so 16 functions, all sharing the *same* environment very
+> # efficiently and nicely
+> 
+> # this is *the* environment for the fitted model:
+> fmE <- environment(fm1$m[[1]])
+> ls.str(fmE)
+> ```
+> 
+> so the environment "contains" the functions themselves (but quite
+> a few more things) and for an environment that means it only
+> has pointers to the same function objects which are *also* in `fm1$m`.
+> 
+> **So, there has been a nice convincing and important example on
+> how to do this - inside R for more than two decennia.**
+
+Final emphasis was added by me. 
