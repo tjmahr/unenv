@@ -1,5 +1,7 @@
-november-2021
+december-2021
 quick-hits
+november-2021
+quick-hits-1
 eval-is-stack-inconsistent-whatever-that-means
 the-gaussian-kde-is-a-sum-of-baby-gaussians
 using-closures-to-make-16-related-functions

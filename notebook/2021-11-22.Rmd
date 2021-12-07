@@ -17,7 +17,7 @@ that `par()` options are not preserved between knitr chunks unless
 `opts_knit$get("global.par")` is `TRUE`. It's `FALSE` by default. No
 funny business using `old <- par(...)`
 
-**Sampling a swimming pool depth.** Jorbs on his Slay the Spire stream
+**Sampling a swimming pool depth**. Jorbs on his Slay the Spire stream
 commented problems with big data. He used [a nice
 analogy](https://www.youtube.com/watch?v=kHS-tFnJKqA&t=5712s) for
 sampling bias. Imagine you have a swimming pool and we can't see the

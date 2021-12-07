@@ -1,0 +1,37 @@
+<!--- Timestamp to trigger book rebuilds: `r Sys.time()` --->
+
+```{r setup, include = FALSE}
+# library(tidyverse)
+# fit <- targets::tar_read(fit)
+# fit
+url_done <- downlit::autolink_url("rlang::done()")
+
+```
+
+
+## December 2021
+
+<small>Source: <code>`r knitr::current_input()`</code></small>
+
+### Quick hits
+
+rlang provides [`done()`](`r url_done`) to break out of a loop.
+
+
+**Leslie matrix**. Advent of Code day 6 (simulating population growth) can be done with
+matrix multiplication on a [Leslie
+matrix](https://en.wikipedia.org/wiki/Leslie_matrix) which is a
+transition matrix on age counts:
+
+> The Leslie matrix is a square matrix with the same number of rows and
+> columns as the population vector has elements. The (i,j)th cell in the
+> matrix indicates how many individuals will be in the age class i at
+> the next time step for each individual in stage j.
+
+
+*Monads in one sentence*.
+
+> A monad is the miniam amount of structure needed to overload function
+> composition in a way that "performs an extra computation" on the
+> intermediate value. 
+> -- <https://www.youtube.com/watch?v=Nq-q2USYetQ&feature=youtu.be>
