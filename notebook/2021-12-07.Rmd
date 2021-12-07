@@ -17,6 +17,8 @@ url_done <- downlit::autolink_url("rlang::done()")
 
 rlang provides [`done()`](`r url_done`) to break out of a loop.
 
+This paper uses by-word entropy as a measure of intelligibility. 
+<https://doi.org/10.1017/S0305000921000714>
 
 **Leslie matrix**. Advent of Code day 6 (simulating population growth) can be done with
 matrix multiplication on a [Leslie
