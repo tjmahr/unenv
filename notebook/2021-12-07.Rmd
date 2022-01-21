@@ -32,7 +32,7 @@ transition matrix on age counts:
 
 **Monads in one sentence**.
 
-> A monad is the miniam amount of structure needed to overload function
+> A monad is the minimum amount of structure needed to overload function
 > composition in a way that "performs an extra computation" on the
 > intermediate value. 
 > -- <https://www.youtube.com/watch?v=Nq-q2USYetQ&feature=youtu.be>
