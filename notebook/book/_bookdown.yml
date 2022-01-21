@@ -1,0 +1,12 @@
+book_filename: main
+delete_merged_file: yes
+before_chapter_script: knitr-helpers.R
+rmd_files:
+- index.Rmd
+- 2022-01-21.md
+- 2021-12-07.md
+- 2021-11-22.md
+- 2021-11-01-archival-notes.md
+- 0000-00-00-references.md
+output_dir: ../../docs
+new_session: yes

@@ -7,19 +7,14 @@ library(notestar)
 source("R/functions.R")
 
 tar_option_set(
-  packages = c(
-    # "tidyverse",
-    "notestar"
-  ),
+  packages = c("notestar"),
   imports = c("notestar")
 )
-
 
 # Develop your main targets here
 targets_main <- list(
 
 )
-
 
 targets_notebook <- list(
   tar_notebook_pages(
