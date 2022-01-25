@@ -346,7 +346,7 @@ model <- fit_beta_gamlss(data_intel, mu_df = 3, sigma_df = 2)
 ```
 
 Then we can get centiles pretty easily for the existing *x* values. But
-note how the large gaps.
+note the three gaps on the percentile line.
 
 ```{r}
 #| label: splines-data-10
