@@ -1,8 +1,9 @@
 january-2022
-how-to-manually-delete-a-facet-cell
-how-to-get-manual-spline-predictions-from-gamlss
+manually-delete-a-facet-cell
+compute-spline-predictions-manually-from-gamlss
 problem-setup
 problem-solution
+count-number-of-function-calls-in-some-r-code
 december-2021
 quick-hits
 november-2021

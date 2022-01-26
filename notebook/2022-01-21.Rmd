@@ -10,6 +10,9 @@ library(tidyverse)
 
 <small>Source: <code>`r knitr::current_input()`</code></small>
 
+I have decided to get rid of "how to" from heading names. I'm thinking about
+creating a separate links/bookmarks section.
+
 **New interesting R packages**. 
 
   - ggdensity An R package for interpretable visualizations of density
@@ -29,7 +32,7 @@ library(tidyverse)
 </blockquote>
 
 
-**How to conditionally provide tibbles**. The [newsletter by
+**Conditionally provide tibbles**. The [newsletter by
 rOpenSci](https://ropensci.org/blog/2022/01/21/ropensci-news-digest-january-2022/#to-quote-or-not-to-quote-non-existing-words-in-description)
 highlights this trick by the palmerpenguins package.
 
@@ -55,17 +58,9 @@ This rOpenSci newsletter also detailed how to get new words past the
 package description spellchecker.
 
 
-**Count number of function calls in a .R file**.
-
-```{r}
-#| eval: false
-code <- parse("functions.R")
-getParseData(code)
-# ... do some data analysis on this this data.frame()
-```
 
 
-### How to manually delete a facet cell
+### Manually delete a facet cell
 
 Suppose you have some ragged data.
 
@@ -180,7 +175,7 @@ ggplot(data, aes(x = age, y = score)) +
   theme(strip.text.x = element_blank())
 ```
 
-### How to get manual spline predictions from GAMLSS
+### Compute spline predictions manually from GAMLSS
 
 My goal is write down some reusable code for how to get
 spline predictions for unobserved *x* values by hand from 
@@ -462,3 +457,26 @@ ggplot(data_intel) +
   scale_x_continuous(breaks = c(36, 48, 60))
 ```
 
+### Count number of function calls in some R code
+
+Do data analysis on `getParseData()` result.
+
+```{r}
+code <- quote({
+  check_out <- my(fancy(code))
+  here_is <- some(fancy(code))
+})
+
+parse_data <- getParseData(parse(text = deparse(code)))
+head(parse_data)
+```
+
+Count tokens using results of `all.names()` and `all.vars()`.
+
+```{r}
+names <- all.names(code)
+vars <- all.vars(code)
+
+# Just the non-variable tokens
+names[!names %in% vars]
+```
