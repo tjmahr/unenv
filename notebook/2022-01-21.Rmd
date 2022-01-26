@@ -467,7 +467,7 @@ code <- quote({
   here_is <- some(fancy(code))
 })
 
-parse_data <- getParseData(parse(text = deparse(code)))
+parse_data <- getParseData(parse(text = deparse(code), keep.source = TRUE))
 head(parse_data)
 ```
 
