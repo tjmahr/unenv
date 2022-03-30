@@ -1,3 +1,5 @@
+april-2022
+r-4.2.0-alpha-notes
 february-2022
 phonotactic-probability
 r-code-to-parse-the-ku-phonotactic-probability-calculator-output
