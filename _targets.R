@@ -27,7 +27,10 @@ targets_notebook <- list(
   ),
   tar_notebook_pages(),
   tar_notebook(
-    subdir_output = "../../docs"
+    subdir_output = "../../docs",
+    markdown_document2_args = list(
+      css = "assets/downlit.css"
+    )
   ),
 
   # If I use book_filename = "index", then "index.Rmd" gets deleted by
@@ -36,7 +39,7 @@ targets_notebook <- list(
   tar_file(
     book_index,
     {
-      file.copy(notebook, "docs/index.html", overwrite = TRUE)
+      downlit::downlit_html_path(notebook, "docs/index.html")
       "docs/index.html"
     }
   ),

@@ -6,7 +6,7 @@
 # fit
 ```
 
-## May 2022
+## April, May 2022
 
 <small>Source: <code>`r knitr::current_input()`</code></small>
 
@@ -26,6 +26,7 @@ options(renv.config.install.transactional = FALSE)
 My full .Rprofile tends to be something like:
 
 ```{r, eval = FALSE}
+source("renv/activate.R")
 options(
   repos = c(
     tjmahr = 'https://tjmahr.r-universe.dev',
@@ -33,16 +34,14 @@ options(
     getOption("repos")
   )
 )
-source("renv/activate.R")
 options(WrapRmd.width = 72)
 options(styler.addins_style_transformer = "grkstyle::grk_style_transformer()")
 options(renv.config.install.transactional = FALSE)
 ```
 
+Note that I put the renv activation first because it does some work with
+the repos option and I don't want to get in the way of it.
 
-## April 2022
-
-<small>Source: <code>`r knitr::current_input()`</code></small>
 
 ### R 4.2.0 alpha notes
 
@@ -66,6 +65,3 @@ of R 4.2.0 that I have been using on Windows for the past few weeks.
   - Here is the documentation page for Rtools42
     <https://cran.r-project.org/bin/windows/base/howto-R-4.2.html>
 
-```{r content}
-
-```

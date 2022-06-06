@@ -1,4 +1,10 @@
-april-2022
+june-2022
+getting-downlit-to-work-on-this-notebook
+windows-terminal-settings-for-miniconda
+interactive-setup
+json
+april-may-2022
+rprofile-contents
 r-4.2.0-alpha-notes
 february-2022
 phonotactic-probability
