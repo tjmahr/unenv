@@ -1,3 +1,7 @@
+november-december-2022
+duckdb
+september-2022
+the-bic
 june-2022
 getting-downlit-to-work-on-this-notebook
 windows-terminal-settings-for-miniconda

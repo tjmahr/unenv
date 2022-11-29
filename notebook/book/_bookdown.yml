@@ -3,6 +3,7 @@ delete_merged_file: yes
 before_chapter_script: knitr-helpers.R
 rmd_files:
 - index.Rmd
+- 2022-12-01.md
 - 2022-06-06.md
 - 2022-04-02.md
 - 2022-02-01.md
