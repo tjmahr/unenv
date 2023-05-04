@@ -1,0 +1,111 @@
+<!--- Timestamp to trigger book rebuilds: `r Sys.time()` --->
+
+```{r setup, include = FALSE}
+library(tidyverse)
+# fit <- targets::tar_read(fit)
+# fit
+```
+
+## May 2023
+
+<small>Source: <code>`r knitr::current_input()`</code></small>
+
+
+### Nonlinear model zoo
+
+#### Gompertz 
+
+The [Gompertz function](https://en.wikipedia.org/wiki/Gompertz_function)
+"describes growth as being slowest at the start and end of a given time
+period. The right-side or future value asymptote of the function is
+approached much more gradually by the curve than the left-side or lower
+valued asymptote." 
+
+$$
+f(t) = a\mathrm{e}^{-b\mathrm{e}^{-ct}} \\
+a: \textrm{asymptote} \\
+b: \textrm{translation left or right} \\
+c: \textrm{growth factor} \\
+$$
+
+So we have two different growth rates but a single parameter relating to
+growth rate. R's implementation (`stats::SSgompertz()`) "simplifies" the
+double exponential into `Asym * exp(-b2 * b3 ^ x)`.
+
+The scaling factor c or b3 makes sense in the original Gompertz
+equation. I couldn't understand what the R version was doing because it was
+changing the base of exponentiation.
+
+```{r gomp0}
+library(tidyverse)
+
+gompertz <- function(xs, asym, b2, b3) {
+  asym * exp(-b2 * exp(-b3 * xs))
+}
+stat_gompertz <- function(focus, asym, b2, b3) {
+  args <- list(asym = asym, b2 = b2, b3 = b3)
+  color <- sprintf("%s = %s", focus, args[[focus]])
+  stat_function(
+    aes(color = color),
+    fun = gompertz, 
+    args = args
+  )
+}
+
+ggplot() + 
+  xlim(-5, 5) +
+  stat_gompertz("b3", 1, 1, 1) +
+  stat_gompertz("b3", 1, 1, 0) +
+  stat_gompertz("b3", 1, 1, .1) + 
+  stat_gompertz("b3", 1, 1, -.5)
+```
+
+We have this weird thing where $b = 1/2$ and $b = 2$ are the same
+distance from $b = 1$.
+
+```{r gomp1}
+ggplot() + 
+  xlim(-5, 5) +
+  stat_gompertz("b2", 1, 1/2, 1) +
+  stat_gompertz("b2", 1, 2, 1) +
+  stat_gompertz("b2", 1, 1, 1) + 
+  stat_gompertz("b2", 1, 0, -1) 
+```
+
+
+```{r, include = FALSE, eval = FALSE}
+# DNase
+ggplot(DNase) + 
+  aes(x = log(conc), y = density) + 
+  geom_point() +
+  geom_line(aes(group = Run))
+
+library(lme4)
+
+# Demo
+
+DNase$log_conc <- DNase$conc |> log()
+
+starts <- getInitial(
+  density ~ SSgompertz(log_conc, Asym, b2, b3), 
+  data = DNase
+)
+
+nm1 <- nlmer(
+  density ~ SSgompertz(log_conc, Asym, b2, b3) ~ (b3 + Asym | Run),
+  data = DNase, 
+  start = starts
+)
+
+coef(nm1)[["Run"]] |> 
+  tibble::rownames_to_column("Run")
+
+DNase |> 
+  tidy
+# tibble <- 
+#   
+#   tidyr::expand(londseq(-3.5, 4, by = .1)
+
+
+```
+
