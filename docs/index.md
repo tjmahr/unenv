@@ -2,7 +2,7 @@
 title: Unevaluated expressions
 author: TJ Mahr
 date: |
-  Updated on Friday, May 05, 2023 02:31 PM
+  Updated on Friday, January 19, 2024 11:04 AM
 site: bookdown::bookdown_site
 link-citations: true
 bibliography: ./assets/refs.bib

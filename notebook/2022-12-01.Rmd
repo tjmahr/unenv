@@ -6,10 +6,9 @@ library(tidyverse)
 # fit
 ```
 
-## November, December 2022
+## December 2022
 
 <small>Source: <code>`r knitr::current_input()`</code></small>
-
 
 ### duckdb
 
@@ -79,5 +78,4 @@ withr::with_dir("../files-to-import/2022-10-27-batch-1/", {
   run_control_file_query() |>
     compute(name = "control_files", temporary = FALSE)
 })
-
 ```

@@ -1,0 +1,185 @@
+<!--- Timestamp to trigger book rebuilds: `r Sys.time()` --->
+
+```{r setup, include = FALSE}
+# library(tidyverse)
+# fit <- targets::tar_read(fit)
+# fit
+```
+
+## January 2024
+
+<small>Source: <code>`r knitr::current_input()`</code></small>
+
+
+### MFA note: don't touch the solver
+
+My colleague and I independently ran into an issue where the Montreal
+Forced Aligner installation with conda seemed to take forever during the
+solving environment stage. We both tried to fix this problem by changing
+the default solver. This change did lead to improved installation, but
+the MFA could not run at all. The correct thing to do is **do nothing**.
+Just use the default solver and wait it out.
+
+### targets + crew
+
+In targets, by default, targets are dispatched to be built one at a
+time, but we can use crew so that multiple workers can build targets in
+parallel. Here is the code to add to `_targets.R` to get 2 workers.
+
+```{r eval = FALSE}
+targets::tar_option_set(
+  controller = crew::crew_controller_local(workers = 2)
+)
+```
+
+And then you can view how much work each worker did. (I'm hard-coding
+the returns to show what happened with a full sit build.)
+
+```{r, eval = FALSE}
+targets::tar_crew()
+#>   controller               worker seconds targets
+#>   <chr>                     <int>   <dbl>   <int>
+#> 1 8f28e966dd6adaf60895eb01      1    49.4      32
+#> 2 8f28e966dd6adaf60895eb01      2    25.1       9
+```
+
+### revelation while reading withr 3.0.0 release
+
+I was reading the [withr 3.0.0 release
+notes](https://www.tidyverse.org/blog/2024/01/withr-3-0-0/) and noticed
+a pleasing symmetry the `with_` and `local_` functions.
+
+The `local_` functions set a temporary value within some local scope,
+like a `local()` or a `function()`.
+
+```{r}
+local({
+  withr::local_language("fr")
+  plot[[1]]
+})
+plot[[1]]
+```
+
+The `with_` functions set a temporary value around some block of code.
+
+```{r}
+withr::with_language("fr", {
+  plot[[1]]
+})
+plot[[1]]
+```
+
+So where are we working from?
+
+- local: within the code (scope)
+- withr: around the code
+
+### a silly function
+
+I got sick of writing null-guard clauses like:
+
+```{r}
+my_cool_function <- function(data, ...) {
+  if (is.null(data)) { 
+    return(NULL)
+  }
+  
+  #  rest of the function
+  nrow(data)
+}
+```
+
+So why can't I just make that a higher order function:
+
+```{r}
+nullsafe_map <- function(x, f, ...) {
+  if (is.null(x)) NULL else f(x, ...)
+}
+
+mtcars |> 
+  nullsafe_map(my_cool_function) |> 
+  nullsafe_map(log)
+
+NULL |> 
+  nullsafe_map(my_cool_function) |> 
+  nullsafe_map(log)
+```
+
+It feels like I reinvented something vaguely monad-y here, and [I posted
+the
+question](https://staging.bsky.app/profile/tjmahr.com/post/3kiq3hhlvis2m):
+"What have I reinvented here?" Tan suggested "`purrr::map_if()` with `.p
+= Negate(is.null)`?" which is cool because I had forgotten about
+`purrr::map_if()`.
+
+### the pipe placeholder works better now
+
+[Andrew Heiss pointed out to
+me](https://staging.bsky.app/profile/andrew.heiss.phd/post/3ki4b46li6l2y)
+that the placeholder since 4.3.0 is a lot better. 
+
+```{r}
+quote(
+  model |> _$coef |> _[1]
+) 
+```
+
+Previously, I had been circumventing these functions with things like
+`getElement()` or making my own pipe-friendly wrapper functions like:
+
+```{r}
+vec_element <- function(xs, i) {
+  xs[[i]]
+}
+
+vec_index <- function(xs, i) {
+  xs[i]
+}
+
+vec_index_into <- function(i, xs) {
+  xs[i]
+}
+
+vec_replace_na <- function(xs, replacement) {
+  xs[is.na(xs)] <- replacement
+  xs
+}
+
+vec_remove_na <- function(xs) {
+  xs[!is.na(xs)]
+}
+
+vec_set_names <- function(xs, ns) {
+  names(xs) <- ns
+  xs
+}
+```
+
+There were two other functions alongside these helpers that weren't
+meant to solve any specific piping problem. I came to adore them when
+I was doing some Advent of Code puzzles for fun in base R.
+
+```{r}
+vec_which_value <- function(xs, value, negate = FALSE) {
+  (xs %in% value) |>
+    xor(negate) |>
+    which()
+}
+
+vec_which_name <- function(xs, name, negate = FALSE) {
+  vec_which_value(names(xs), name, negate)
+}
+
+letters |> 
+  vec_which_value(c("a", "e", "i", "o", "u"), negate = TRUE) |> 
+  vec_index_into(letters)
+```
+
+### `purrr::pluck()` is OP
+
+From `?purrr::pluck()`:
+
+> [`pluck()`] also accepts arbitrary accessor functions, i.e.
+> functions that take an object and return some internal piece. [...]
+> Compare: `accessor(x[[1]])$foo` to `pluck(x, 1, accessor, "foo")`.
+

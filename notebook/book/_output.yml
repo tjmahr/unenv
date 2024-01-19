@@ -3,4 +3,6 @@ bookdown::markdown_document2:
   theme: water
   toc: yes
   mathjax: default
-  css: assets/downlit.css
+  css:
+  - assets/downlit.css
+  - assets/downlit.css

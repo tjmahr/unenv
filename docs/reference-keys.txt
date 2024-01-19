@@ -1,7 +1,13 @@
+january-2024
+mfa-note-dont-touch-the-solver
+targets-crew
+revelation-while-reading-withr-3.0.0-release
+a-silly-function
+the-pipe-placeholder-works-better-now
+purrrpluck-is-op
 may-2023
-nonlinear-model-zoo
-gompertz
-november-december-2022
+gompertz-functions
+december-2022
 duckdb
 september-2022
 the-bic

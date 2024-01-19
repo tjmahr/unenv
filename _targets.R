@@ -8,7 +8,8 @@ source("R/functions.R")
 
 tar_option_set(
   packages = c("notestar"),
-  imports = c("notestar")
+  imports = c("notestar"),
+  controller = crew::crew_controller_local(workers = 4)
 )
 
 # Develop your main targets here
@@ -30,16 +31,16 @@ targets_notebook <- list(
     subdir_output = "../../docs",
     markdown_document2_args = list(
       css = "assets/downlit.css"
-    )
+    ),
+    use_downlit = TRUE
   ),
 
-  # If I use book_filename = "index", then "index.Rmd" gets deleted by
-  # `delete_merged_file: yes` so this is a hack to make the index.html
-  # file
+  # the main notebook output is `main.html` because I forget why... So we make
+  # `index.html` as a copy of it.
   tar_file(
     book_index,
     {
-      downlit::downlit_html_path(notebook, "docs/index.html")
+      file.copy(notebook, "docs/index.html", overwrite = TRUE)
       "docs/index.html"
     }
   ),
@@ -72,6 +73,3 @@ list(
   targets_main,
   targets_notebook
 )
-
-
-
