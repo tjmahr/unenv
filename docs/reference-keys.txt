@@ -1,7 +1,8 @@
 january-2024
+sentence-similarity
 how-i-got-targets-to-handle-a-bunch-of-bootstrapping
-mfa-note-dont-touch-the-solver
 targets-crew
+mfa-note-dont-touch-the-solver
 revelation-while-reading-withr-3.0.0-release
 a-silly-function
 the-pipe-placeholder-works-better-now
