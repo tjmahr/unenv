@@ -1,10 +1,13 @@
 january-2024
+how-i-got-targets-to-handle-a-bunch-of-bootstrapping
 mfa-note-dont-touch-the-solver
 targets-crew
 revelation-while-reading-withr-3.0.0-release
 a-silly-function
 the-pipe-placeholder-works-better-now
-purrrpluck-is-op
+purrrpluck-is-better-than-i-had-realized
+mutual-recursion-demo
+speaking-of-tail-calls-how-to-write-an-iterative-recursive-function
 may-2023
 gompertz-functions
 december-2022
