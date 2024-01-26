@@ -10,6 +10,56 @@
 
 <small>Source: <code>`r knitr::current_input()`</code></small>
 
+
+### One-off knitr engine for blockquoting things
+
+Here's how easy it is to create a knitr language engine:
+
+```{r}
+# create a custom language block that blockquotes its contents
+knitr::knit_engines$set("blockquote" = function(options) {
+  if (isFALSE(options$echo)) return()
+  paste0("> ", options$code, collapse = "\n")
+})
+```
+
+
+
+Writing a chunk like:
+
+````{verbatim}
+```{blockquote}
+Look at this **markdown**!
+  
+Here is a nested blockquote:
+  
+  > Cool!
+
+Yes.
+```
+````
+
+Will yield the following output:
+
+```{blockquote}
+Look at this **markdown**!
+  
+Here is a nested blockquote:
+  
+  > Cool!
+
+Yes.
+```
+
+I wanted to make this a hook function but couldn't figure it out.
+
+```{comment}
+ This is stupid extra block to fix the syntax highlighting in RStudio.
+ ````
+```
+
+
+
 ### Sentence similarity
 
 I read an
@@ -47,7 +97,9 @@ sum(movies[2, ] * movies[3, ])
 dot_products <- movies %*% t(movies)
 ```
 
-Check this out. `as.dist()` will clean up the redundant output, but it discards the diagonal. [Suggestion from StackOverflow](https://stackoverflow.com/questions/2535234/find-cosine-similarity-between-two-arrays).
+Check this out. `as.dist()` will clean up the redundant output, but it
+discards the diagonal. [Suggestion from
+StackOverflow](https://stackoverflow.com/questions/2535234/find-cosine-similarity-between-two-arrays).
 
 ```{r}
 as.dist(dot_products)
@@ -91,10 +143,12 @@ norm_products <- norms %*% t(norms)
 (dot_products / norm_products) |> as.dist() |> round(3)
 ```
 
-This value is cosine similarity. If we use 1 - similarity, it's cosine distance. That would be more appropriate for anything piped into `as.dist()`.
+This value is cosine similarity. If we use 1 - similarity, it's cosine
+distance. That would be more appropriate for anything piped into
+`as.dist()`.
 
-Still, two points could be very different distances from the origin, but they
-could have an angle of 0.
+Still, two points could be very different distances from the origin, but
+they could have an angle of 0.
 
 ### How I got targets to handle a bunch of bootstrapping
 
