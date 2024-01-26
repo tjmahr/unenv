@@ -1,9 +1,0 @@
-code {
-  font-family: monospace;
-}
-
-code a:any-link {
-  color: inherit; /* use colour from syntax highlighting */
-  text-decoration: underline;
-  text-decoration-color: #ccc;
-}

@@ -7,3 +7,7 @@ code a:any-link {
   text-decoration: underline;
   text-decoration-color: #ccc;
 }
+
+blockquote em {
+	font-style: normal;
+}
