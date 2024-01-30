@@ -10,6 +10,11 @@
 
 <small>Source: <code>`r knitr::current_input()`</code></small>
 
+### Links
+
+  - <https://0.30000000000000004.com/> - I can never remember how to
+    search for this URL.
+
 ### One-off knitr engine for blockquoting things
 
 Here's how easy it is to create a knitr language engine:
