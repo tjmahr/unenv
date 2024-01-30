@@ -1,5 +1,6 @@
 january-2024
 one-off-knitr-engine-for-blockquoting-things
+simulation-for-a-probability-paradox
 sentence-similarity
 how-i-got-targets-to-handle-a-bunch-of-bootstrapping
 targets-crew
