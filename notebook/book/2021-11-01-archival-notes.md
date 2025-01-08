@@ -1,4 +1,4 @@
-<!--- Timestamp to trigger book rebuilds: 2024-01-19 10:10:00.190388 --->
+<!--- Timestamp to trigger book rebuilds: 2025-01-08 10:00:25.155489 --->
 
 
 
@@ -24,7 +24,7 @@ Here is a bunch of pre-2021 items from OneNote and elsewhere.
 AV plots by hand and by `car::avPlot()`
 
 
-```r
+``` r
 par(mar = c(4, 4, 1, 1))
 
 m <- lm(mpg ~ wt + hp + am, mtcars)
@@ -48,7 +48,7 @@ p1 + p2
   <figcaption></figcaption>
 </figure>
 
-```r
+``` r
 all.equal(residuals(m_partial), residuals(m))
 #> [1] TRUE
 
@@ -81,7 +81,7 @@ single "z" scale. Here's a made-up example.
 Simulate some gamma-distributed data.
 
 
-```r
+``` r
 library(patchwork)
 set.seed(20211122)
 par(mar = c(4, 4, 1, 1))
@@ -100,7 +100,7 @@ wrap_elements(full = ~ hist(y)) +
 Fit a GLM
 
 
-```r
+``` r
 get_shape <- function(model) { 
   1 / summary(model)[["dispersion"]]
 }
@@ -117,7 +117,7 @@ get_shape(m2)
 The two `z` values have similar scales.
 
 
-```r
+``` r
 par(mar = c(4, 4, 1, 1))
 r <- residuals(m)
 r2 <- residuals(m2)
@@ -138,7 +138,7 @@ wrap_elements(
   <figcaption></figcaption>
 </figure>
 
-```r
+``` r
 
 wrap_elements(
   full = ~ car::qqPlot(
