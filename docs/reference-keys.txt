@@ -2,7 +2,7 @@ january-2025
 use-gams-for-assessing-nonlinearity-of-effects
 sweep-demo
 log-likelihood-functions
-quick-links
+bits-and-pieces
 january-2024
 links
 one-off-knitr-engine-for-blockquoting-things
