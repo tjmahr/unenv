@@ -2,9 +2,82 @@
 
 ```{r setup, include = FALSE}
 library(tidyverse)
-# fit <- targets::tar_read(fit)
-# fit
 ```
+
+
+
+
+## June 2025
+
+<small>Source: <code>`r knitr::current_input()`</code></small>
+
+### Mundlak machines
+
+I've been going down a rabbithole about centering in multilevel models and all
+that fun stuff. Important resources so far:
+
+- Hazlett, C., & Wainstein, L. (2022). Understanding, Choosing, and Unifying Multilevel and Fixed Effect Approaches. Political Analysis, 30(1), 46–65. https://doi.org/10.1017/pan.2020.41
+
+- Hoffman, L., & Walters, R. W. (2022). Catching Up on Multilevel Modeling. Annual Review of Psychology, 73(1), 659–689. https://doi.org/10.1146/annurev-psych-020821-103525
+
+- Guo, Y., Dhaliwal, J., & Rights, J. D. (2024). Disaggregating level-specific effects in cross-classified multilevel models. Behavior Research Methods, 56(4), 3023–3057. https://doi.org/10.3758/s13428-023-02238-7
+
+- McElreath, R. (2023). Statistical Rethinking 2023 - 12 - Multilevel Models. [*Relevant portion at 54:47.*] https://www.youtube.com/watch?v=iwVqiiXYeC4&t=3286s
+
+- Bell, A., Jones, K., & Fairbrother, M. (2018). Understanding and misunderstanding group mean centering: A commentary on Kelley et al.’s dangerous practice. Quality & Quantity, 52(5), 2031–2036. https://doi.org/10.1007/s11135-017-0593-5
+
+The Mundlak problem happens when we have a repeated measure outcome *y*, a
+repeated measure predictor *x* both nested in groups *g*. The naive
+multilevel model to estimate would be `y ~ 1 + x + (x | g)`. If there is
+no repeated predictor *x*, we don't have to worry about this particular
+problem. 
+
+
+```{r}
+
+```
+
+
+
+
+
+*The practical modeling rationale*. We can frame the problem in terms of "smushing" or "conflation" of
+between-group and within-group effects. Suppose that we don't use a
+multilevel model and just average at the group level and model `y_mean ~
+x_mean`. This aggregated model can assess whether groups with higher
+average x values have higher expected average y values (a between-group
+effect). But the more interesting model is the disaggregated one where
+we examine---at the observation level or row level---whether changes in
+*x* leads to changes in *y* in each group (a within-group effect). When
+we just include `x` in the model, we are estimating both between and
+within group effects behind a single coefficient. So, with a pragmatic
+interest in disentangling these effects, we should separate these
+effects by including the group means as a predictor: `y ~ 1 + x + x_mean
++ (x | g)`.
+
+Bell, Jones and Fairbrother (2018) provide a version of this rationale:
+
+> Kelley et al. argue in favour of the standard RE model (model 1), over the
+model with group-mean-centering, model 2. The limitation of their preferred
+model, however, is that the estimated coefficient on x<sub>ij</sub> is a
+weighted average of two effects—one at level 1 and the other at level 2 (Bell et
+al. 2016; Bell and Jones 2015; Fairbrother 2014). These two effects have
+different substantive meanings; they capture the within-group and between-group
+relationships, respectively, and these relationships may be quite different. At
+level 1, the ‘within’ effect captures the difference on Y between units that are
+higher or lower *than average on X relative to their group**, whilst at level 2
+the ‘between’ or ‘contextual’ effect captures the difference between *groups
+that have a higher or lower X as a whole (or, equivalently, on average)*.
+
+Some groups can have higher average `x` values than other groups, so we might want to know 
+
+there is a between-group variability. The value of `x` can vary within group, and the effect of `x` on `y` can diffe
+
+
+
+
+
+
 
 ## January 2025
 
