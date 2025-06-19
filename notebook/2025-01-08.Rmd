@@ -26,54 +26,315 @@ that fun stuff. Important resources so far:
 
 - Bell, A., Jones, K., & Fairbrother, M. (2018). Understanding and misunderstanding group mean centering: A commentary on Kelley et al.’s dangerous practice. Quality & Quantity, 52(5), 2031–2036. https://doi.org/10.1007/s11135-017-0593-5
 
-The Mundlak problem happens when we have a repeated measure outcome *y*, a
-repeated measure predictor *x* both nested in groups *g*. The naive
-multilevel model to estimate would be `y ~ 1 + x + (x | g)`. If there is
-no repeated predictor *x*, we don't have to worry about this particular
-problem. 
+The Mundlak problem happens when we have a repeated measure outcome *y*,
+a repeated measure predictor *x*, and both of these nested in groups
+*g*. There is some unobserved, group-level variable that affects the
+mean value of `y` and the mean of `x`. The naive multilevel model to
+estimate would be `y ~ 1 + x + (1 | g)`, but this model would have a
+biased estimate of the effect `x`. Note that if there is no repeated
+predictor *x*, we don't have to worry about this particular problem. The
+Mundlak solution is to include the mean of `x` as a separate predictor.
+`y ~ 1 + x + x_mean + (1 | g)`. The problem here can be described as 
+an omitted variable bias.
 
+
+
+Let's create a simulation that demonstrates the kind of omitted variable
+bias / endogeneity problem that requires a Mundlak correction. We are
+going to have a case of a speed-accuracy trade-off: Higher than average
+speed trials for a group will have lower `accuracy`, but groups with
+higher average speeds will have higher average `accuracies` (a
+relationship created by an unobserved group-level confounder).
 
 ```{r}
+library(tidyverse)
+set.seed(2025)
 
+s <- tibble::lst(
+  n_groups = 20,
+  n_obs_per_group = rpois(n_groups, 15),
+  total_n = sum(n_obs_per_group),
+  group_confounder = rnorm(n_groups, mean = 0, sd = 1),
+  intercept = -0.2,
+  true_speed_effect = -0.5,
+  confounder_effect = 1.2,
+  sd_speed = 1,
+  sd_group_intercepts = 0.3,
+  sd_residual_linear_pred = 0.1,
+  group_intercepts = rnorm(n_groups, 0, sd_group_intercepts)
+)
+
+sim_data <- data.frame(
+  group = rep(seq_len(s$n_groups), times = s$n_obs_per_group),
+  obs_id = seq_len(s$total_n)
+) |>
+  mutate(
+    group_confounder = s$group_confounder[group],
+    speed = group_confounder + rnorm(s$total_n, mean = 0, sd = s$sd_speed),
+    linear_pred =
+      s$intercept +
+      s$true_speed_effect * speed +
+      s$confounder_effect * group_confounder +
+      s$group_intercepts[group] +
+      rnorm(s$total_n, 0, s$sd_residual_linear_pred),
+    prob_accuracy = plogis(linear_pred),
+    accuracy = rbinom(s$total_n, 1, prob_accuracy)
+  ) |> 
+  group_by(group) |>
+  mutate(
+    speed_group_mean = mean(speed),
+    speed_centered = speed - speed_group_mean,
+    n_correct = sum(accuracy),
+    n_trials = length(accuracy)
+  ) |>
+  ungroup()
 ```
 
+In this setup, the true effect of speed on accuracy is
+`r s$true_speed_effect` logits but there is a profound group-level
+effect on the order of `r s$confounder_effect` logits. But note that if
+a Group A's average speed is 0 and Group B's average speed is 1, then a
+change of 1 speed units between these group means yields a change in
+accuracy of `r s$confounder_effect` + `r s$true_speed_effect` = 
+`r s$confounder_effect + s$true_speed_effect` logits. 
+This effect is the true between-group effect.
 
 
+I have come across a few different rationales for including `x_mean` as a predictor. Let's work through these in turn.
 
+*The practical modeling rationale*. We can frame the problem in terms of
+"smushing" or "conflation" of between-group and within-group effects.
+Suppose that we don't use a multilevel model and just average at the
+group level and model `y_mean ~ x_mean`. This aggregated model can
+assess whether groups with higher average x values have higher expected
+average y values (a between-group effect). 
 
-*The practical modeling rationale*. We can frame the problem in terms of "smushing" or "conflation" of
-between-group and within-group effects. Suppose that we don't use a
-multilevel model and just average at the group level and model `y_mean ~
-x_mean`. This aggregated model can assess whether groups with higher
-average x values have higher expected average y values (a between-group
-effect). But the more interesting model is the disaggregated one where
+```{r}
+model_aggregated <- sim_data |> 
+  distinct(group, speed_group_mean, n_trials, n_correct) |> 
+  glm(
+    cbind(n_correct, n_trials - n_correct) ~ speed_group_mean, 
+    data = _, 
+    family = "binomial"
+  )
+coef(model_aggregated)
+
+# Use row-level random intercepts to allow overdispersion
+model_overdispersed_aggregated <- sim_data |> 
+  distinct(group, speed_group_mean, n_trials, n_correct) |> 
+  glmer(
+    cbind(n_correct, n_trials - n_correct) ~ 
+      speed_group_mean + (1 | group), 
+    data = _, 
+    family = "binomial"
+  ) 
+fixef(model_overdispersed_aggregated)
+```
+
+Faster groups are more accurate. Easy peasy. 
+
+But the more interesting model is the disaggregated one where
 we examine---at the observation level or row level---whether changes in
-*x* leads to changes in *y* in each group (a within-group effect). When
+*x* leads to changes in *y* in each group (a within-group effect). Indeed, this effect would be the crucial speed-accuracy tradeoff of interest! When
 we just include `x` in the model, we are estimating both between and
 within group effects behind a single coefficient. So, with a pragmatic
 interest in disentangling these effects, we should separate these
 effects by including the group means as a predictor: `y ~ 1 + x + x_mean
 + (x | g)`.
 
-Bell, Jones and Fairbrother (2018) provide a version of this rationale:
+Bell, Jones and Fairbrother (2018) provide a version of this story:
 
-> Kelley et al. argue in favour of the standard RE model (model 1), over the
-model with group-mean-centering, model 2. The limitation of their preferred
-model, however, is that the estimated coefficient on x<sub>ij</sub> is a
-weighted average of two effects—one at level 1 and the other at level 2 (Bell et
-al. 2016; Bell and Jones 2015; Fairbrother 2014). These two effects have
-different substantive meanings; they capture the within-group and between-group
-relationships, respectively, and these relationships may be quite different. At
-level 1, the ‘within’ effect captures the difference on Y between units that are
-higher or lower *than average on X relative to their group**, whilst at level 2
-the ‘between’ or ‘contextual’ effect captures the difference between *groups
-that have a higher or lower X as a whole (or, equivalently, on average)*.
+> Kelley et al. argue in favour of the standard RE model (model 1), over
+> the model with group-mean-centering, model 2. The limitation of their
+> preferred model, however, is that the estimated coefficient on
+> x<sub>ij</sub> is a weighted average of two effects—one at level 1 and
+> the other at level 2 (Bell et al. 2016; Bell and Jones 2015;
+> Fairbrother 2014). These two effects have different substantive
+> meanings; they capture the within-group and between-group
+> relationships, respectively, and these relationships may be quite
+> different. At level 1, the ‘within’ effect captures the difference on
+> Y between units that are higher or lower *than average on X relative
+> to their group*, whilst at level 2 the ‘between’ or ‘contextual’
+> effect captures the difference between *groups that have a higher or
+> lower X as a whole (or, equivalently, on average)*.
+
+Hoffman and Walters (2022) make the same point:
+
+> [W]ithout a fixed slope for its corresponding level-2 mean
+> predictor, the fixed slope of a constant-centered level-1 predictor is
+> an uninterpretable blend of its withinlevel-1 and between-level-2
+> fixed slopes. This useless blended effect has many names, including
+> total effect (e.g., Burstein 1980; Raudenbush & Bryk 2002, chapter 5;
+> Snijders & Bosker 2012, chapter 3), conflated effect (e.g., Preacher
+> et al. 2010), composite effect (e.g., Wang & Maxwell 2015),
+> convergence effect (e.g., Hoffman 2012, Sliwinski et al. 2010), and
+> smushed effect (e.g., Hoffman 2015, chapter 8) [...] Adding a fixed
+> slope for the level-2 mean of the constant-centered level-1 predictor
+> prevents its smushed effect [...]
+
+When we regress accuracy onto raw speed scores with group-level
+random intercepts, we get the conflated speed effect:
+
+```{r}
+model_re <- glmer(
+  accuracy ~ speed + (1 | group), 
+  data = sim_data, 
+  family = "binomial"
+) 
+fixef(model_re)
+```
+
+If we include the group level means as an additional variable, we get the 
+decomposed effect:
+
+```{r}
+model_mundlak <- glmer(
+  accuracy ~ speed + speed_group_mean  + (1 | group), 
+  data = sim_data, 
+  family = "binomial"
+) 
+fixef(model_mundlak)
+```
+
+Each of those passages are from larger discussions about the role of
+centering in the models. If we mean-center `x` in each group, then we
+can estimate the within-group effect directly.
+
+
+```{r}
+
+model_within <- glmer(
+  accuracy ~ speed_centered + (1 | group), 
+  data = sim_data, 
+  family = "binomial"
+) 
+fixef(model_within)
+
+model_within_between <- glmer(
+  accuracy ~ speed_centered + speed_group_mean + (1 | group), 
+  data = sim_data, 
+  family = "binomial"
+) 
+fixef(model_within_between)
+```
+
+So, to get an accurate, unsmushed within-group effect, we need to
+include the group-level means or include use group-centered values as
+the within-group predictor.: 
+
+```{r}
+model_row <- function(model, tag, within, between) {
+  cs <- if (inherits(model, "merMod")) fixef(model) else coef(model)
+  data.frame(
+    model = tag,
+    formula = format(formula(model)),
+    speed_within = round(cs[within], 3),
+    speed_between = round(cs[between], 3), 
+    row.names = NULL
+  )
+}
+
+model_fixed
+
+bind_rows(
+  model_row(model_re, "baseline random effects", "speed", NA_character_),
+  model_row(model_within, "within", "speed_centered", NA_character_),
+  model_row(model_mundlak, "mundlak", "speed", "speed_group_mean"),
+  model_row(model_within_between, "within-between", "speed_centered", "speed_group_mean"),
+) |> 
+  knitr::kable()
+
+```
+
+
+This is the true between group effect.
+
+```{r}
+predict(
+  model_mundlak, 
+  newdata = data.frame(speed = c(0, 1), speed_group_mean = c(0, 1)), 
+  re.form = NA, 
+  type = "link"
+)
+
+predict(
+  model_within_between, 
+  newdata = data.frame(speed_centered = c(0, 0), speed_group_mean = c(0, 1)), 
+  re.form = NA, 
+  type = "link"
+)
+```
+
+
+There is a third way to get a clean within-group speed effect. Recall that in 
+this arrangement, there is between-group confounder that affects the mean
+accuracy and mean speed in each group. So, we just control for group as a *fixed effect*:
+
+```{r}
+model_fixed_effects <- glm(
+  accuracy ~ 0 + speed + factor(group),
+  family = "binomial",
+  data = sim_data
+  # The sight of it pains me too.
+)
+coef(model_fixed_effects)["speed"]
+```
+
+But shouldn't our multilevel model have handled between
+group variability (via the group-level random intercepts) for us so that we don't need to control for group?
+
+The answer is that the random intercepts are smoothers or partial
+poolers, pulling extreme group estimates towards the grand mean. So, they do not fully control for the between-group differences. As Hazlett and Wainstein (2022) put it,
+
+> Because the group-specific intercepts in a RI [random intercepts]
+> model are regularized, they do not achieve the values that would
+> “fully absorb” group-specific confounding, leaving components
+> unexplained that can instead be captured by biasing the coefficients
+> on $X_{g[i]}$. In [an earlier equalation], where we hope to
+> condition on group to absorb group-level confounders, random effects
+> thus offer only “incomplete conditioning,” not fully accounting for
+> the unobserved grouplevel variables’ influence on the outcome. [...]
+> We call this “incomplete conditioning” because the intended analytical
+> strategy required to estimate *β* unbiasedly would condition on group,
+> but the use of RI fails to achieve this.
+
+
+```{r}
+effects <- data.frame(
+  group = seq_len(s$n_groups),
+  fixed_effects = coef(model_fixed_effects)[-1],
+  random_effects = coef(model_re)[["group"]][["(Intercept)"]]
+) |> 
+  tidyr::pivot_longer(cols = -group)
+
+ggplot(effects) + 
+  aes(x = name, y = value) + 
+  geom_point() +
+  geom_line(aes(group = group)) +
+  theme_minimal(16) +
+  labs(x = "model", y = "group effect")
+```
+
+
+```{r}
+bind_rows(
+  model_row(model_fixed, "baseline fixed effects", "speed", NA_character_),
+  model_row(model_re, "baseline random effects", "speed", NA_character_),
+  model_row(model_within, "within", "speed_centered", NA_character_),
+  model_row(model_mundlak, "mundlak", "speed", "speed_group_mean"),
+  model_row(model_within_between, "within-between", "speed_centered", "speed_group_mean"),
+) |> 
+  knitr::kable()
+```
+
+
+
+But including 
+
 
 Some groups can have higher average `x` values than other groups, so we might want to know 
 
 there is a between-group variability. The value of `x` can vary within group, and the effect of `x` on `y` can diffe
-
-
 
 
 
