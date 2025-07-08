@@ -65,6 +65,7 @@ package description spellchecker.
 Suppose you have some ragged data.
 
 ```{r facet-1}
+set.seed(20220121)
 library(tidyverse)
 data <- tibble(
   id = letters[1:14],

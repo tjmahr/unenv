@@ -127,6 +127,8 @@ gompertz <- function(xs, asym, b2, b3) {
   asym * exp(-b2 * exp(-b3 * xs))
 }
 
+set.seed(20230504)
+
 asym <- 1
 b2 <- rnorm(50, 5, 2)
 b3 <- 1
