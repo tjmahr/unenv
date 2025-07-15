@@ -281,8 +281,7 @@ means <- m$functions$logitnormal_mean2(
 hist(means)
 
 
-# Quick check against logitnorm
-# logitnorm is not vectorized so we would do this
+# Check against logitnorm implementation
 means2 <- wisclabmisc::logitnorm_mean(mus, sigmas)
 all.equal(means, means2)
 ```
@@ -291,6 +290,7 @@ In an actual model, it would probably be smarter to compute this integral in the
 `generated quantities` block so that this marginal mean becomes available 
 like any other posterior variable.
 
+Quick benchmark:
 
 ```{r}
 microbenchmark::microbenchmark(
