@@ -1,3 +1,7 @@
+july-2025-smaller-bits
+scrapped-helper-functions-for-a-list-of-models
+model-condition-number-and-kappa
+resuming-a-renv-project
 july-2025
 the-mean-of-the-logitnormal-distribution-with-stan
 january-2025
