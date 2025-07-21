@@ -57,7 +57,7 @@ anova(m$mpg_disp, m$mpg_disp_wt, m$mpg_disp_wt_int)
 `tidyselect::eval_select()` documentation. 
 
 For `list_select()`, the closest option available from purrr (the
-tidyverse package for working on lists) `purrr::keep_at()`:
+tidyverse package for working on lists) is `purrr::keep_at()`:
 
 ```{r}
 m |> 
