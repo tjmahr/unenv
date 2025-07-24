@@ -13,6 +13,18 @@ library(tidyverse)
 *The other July 2025 file compiles a Stan model, so let's use a separate
 file to avoid rebuilding that entry unnecessarily.*
 
+**Don't use AIC to compare a discrete and a continuous model** [says
+Thomas Lumley][tl-aic]. "The loose way to talk about the problem is that the
+continuous model’s loglikelihood comes from a probability density function while
+the discrete model’s loglikelihood comes from a probability mass function, and
+these are just two different things. You can’t divide one by the other."
+
+[tl-aic]: https://notstatschat.rbind.io/2025/07/22/aic-and-combined-discrete-continuous-models/ "AIC and combined discrete/continuous models"
+
+📌 Two-tailed *p*-value: `2 * pt(-abs(t), df)`, or to stay on the log-scale
+`log(2) + pt(-abs(t), df, log.p = TRUE)`.
+
+
 ### Scrapped helper functions for a list of models
 
 I was making a notebook with a list of related models, like

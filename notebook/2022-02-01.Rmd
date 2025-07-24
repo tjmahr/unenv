@@ -10,8 +10,7 @@
 
 <small>Source: <code>`r knitr::current_input()`</code></small>
 
-
-- [matrixcalculus.org]
+🔗 [matrixcalculus.org]
 
 ### Phonotactic probability
 
