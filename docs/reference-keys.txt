@@ -1,4 +1,5 @@
 july-2025-smaller-bits
+p-values-and-confidence-interval-overlaps
 scrapped-helper-functions-for-a-list-of-models
 model-condition-number-and-kappa
 resuming-a-renv-project
@@ -10,7 +11,6 @@ sweep-demo
 log-likelihood-functions
 bits-and-pieces
 january-2024
-links
 one-off-knitr-engine-for-blockquoting-things
 simulation-for-a-probability-paradox
 sentence-similarity
