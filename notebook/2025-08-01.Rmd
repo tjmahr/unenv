@@ -1,0 +1,97 @@
+<!--- Timestamp to trigger book rebuilds: `r Sys.time()` --->
+
+```{r setup, include = FALSE}
+# library(tidyverse)
+# fit <- targets::tar_read(fit)
+# fit
+```
+
+## August 2025
+
+<small>Source: <code>`r knitr::current_input()`</code></small>
+
+🦜 "(Recall the dictum that mixture models all have computational
+problems and that all computational problems are essentially mixture
+models.)" - Andrew Gelman [commenting on a
+comment][gelman-mixture-comment].
+
+🦜 ‘Because this generation of symptoms entails a complex of
+"subject-internal" activities, we can never speak in the strictest sense
+in terms of simulator-centered "nocebo effects", but only in terms of
+subject-centered "nocebo responses".’ - [Wikipedia][nocebo-wiki]
+being intriguingly pedantic insisting that there is no placebo "effect",
+only placebo "responses".
+
+🔗 A [treatment of NA values][na-values-monad] with wrapper functions
+with a comparison to monads.
+
+[gelman-mixture-comment]: https://statmodeling.stat.columbia.edu/2025/07/31/bio/
+[nocebo-wiki]: https://en.m.wikipedia.org/wiki/Nocebo
+[na-values-monad]: https://www.biobits.be/biofunctor/2025/07/23/lets-talk-about-nas/
+
+I need to make a keyboard shortcut to extract Markdown 
+`[inline links](long-url)` and convert them to `[reference links][ref]`.
+
+*** 
+
+I had to compare how each listener differed from the mean of the other
+listeners, so I cooked up:
+
+```
+leave_one_out_apply <- function(xs, f, ...) {
+  lapply(seq_along(xs), function(i) f(xs[-i], ...) )
+}
+```
+
+### Positron notes
+
+Getting up and running with R is pretty straightforward: install R,
+install RStudio, install packages from CRAN, and off you go. Python is
+more, uh, nonlinear: Install an environment manager and have it cordon
+off little subversions of Python and sublibraries, install some IDE or
+work in the browser 🤷. I'm not a Python guy; I don't know the easy route
+to get up and running. I know that there is some amount of configuration 
+overhead. 
+
+This contrast between R and Python also describes the different
+experiences between RStudio and Positron. Why does it feel like I'm
+always configuring stuff in Positron? Well, it's because it inherits
+from VSCode and VSCode is for *everything* and you can't support
+*everything* without being extremely configurable or "hackable". Plus, I
+don't know what I want from Positron quite yet, and RStudio has had
+like 10 year headstart on Positron, so I'm going to remain charitable
+and supportive of the team.
+
+That said, here are keyboard shortcuts I added recently. I would have
+added [WrapRmd](https://github.com/tjmahr/WrapRmd) but they need to [fix
+some things](https://github.com/posit-dev/positron/issues/8771).
+
+```json
+// Place your key bindings in this file to override the defaults
+[
+  {
+    // targets::tar_load() a symbol
+    "key": "ctrl+shift+alt+l",
+    "command": "workbench.action.executeCode.console",
+    "when": "editorTextFocus",
+    "args": {
+        "langId": "r",
+        "code": "targets::rstudio_addin_tar_load()",
+        "focus": false
+    }
+  },
+  {
+    // Preview result of knitr::knit() on selection
+    "key": "ctrl+shift+alt+k",
+    "command": "workbench.action.executeCode.console",
+    "when": "editorTextFocus",
+    "args": {
+        "langId": "r",
+        "code": "WrapRmd::knit_selection_addin()",
+        "focus": false
+    }
+  }
+]
+```
+
+
