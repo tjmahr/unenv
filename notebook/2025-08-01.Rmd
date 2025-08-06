@@ -44,6 +44,47 @@ leave_one_out_apply <- function(xs, f, ...) {
 }
 ```
 
+### Computing the standard error of a BLUP in lme4
+
+In lme4, when we plot random effects with lattice---which is a useful
+thing we can do!---we get point estimates and 95% intervals for each
+participant's conditional or subject-specific parameter values (a.k.a.,
+BLUPs):
+
+```{r blups, out.width = "80%"}
+# knock out some rows for subject 308
+sleepstudy <- lme4::sleepstudy[-c(2:10),]
+m <- lme4::lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+
+re <- lme4::ranef(m)
+p <- lattice::dotplot(re)
+p
+```
+
+There is uncertainty about these point estimates. Participant 308, whose
+data we removed 90% of, has wider intervals. How can we compute this kind of 
+conditional standard error in an lme4 model?
+
+For each participant's estimates, there is a corresponding conditional
+covariance matrix. These matrices are stored in an attribute called `"postVar"`.
+
+```{r}
+# point estimates
+re$Subject[1, ]
+
+# conditional covariance
+# postVar is a 3D array. the last dimension indexes participants
+attr(re$Subject, "postVar")[, , 1]
+
+# standard errors as sqrt of covariance matrix
+attr(re$Subject, "postVar")[, , 1] |> diag() |> sqrt()
+
+# compare with SEs provided by another package
+broom.mixed::tidy(m, effects = "ran_vals") |> 
+  subset(level == "308")
+```
+
+
 ### Forwarding a function definition into a knitr code chunk
 
 I am writing some Supplemental Materials for an analysis and I want to
