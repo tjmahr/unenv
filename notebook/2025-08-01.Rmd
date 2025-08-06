@@ -48,7 +48,7 @@ leave_one_out_apply <- function(xs, f, ...) {
 
 In lme4, when we plot random effects with lattice---which is a useful
 thing we can do!---we get point estimates and 95% intervals for each
-participant's conditional or subject-specific parameter values (a.k.a.,
+participant's conditional modes or subject-specific parameter values (a.k.a.,
 BLUPs):
 
 ```{r blups, out.width = "80%"}
@@ -65,13 +65,18 @@ There is uncertainty about these point estimates. Participant 308, whose
 data we removed 90% of, has wider intervals. How can we compute this kind of 
 conditional standard error in an lme4 model?
 
+Most directly, we can use `as.data.frame()`:
+
+```{r}
+as.data.frame(re) |> 
+  head()
+```
+
+
 For each participant's estimates, there is a corresponding conditional
 covariance matrix. These matrices are stored in an attribute called `"postVar"`.
 
 ```{r}
-# point estimates
-re$Subject[1, ]
-
 # conditional covariance
 # postVar is a 3D array. the last dimension indexes participants
 attr(re$Subject, "postVar")[, , 1]
@@ -84,6 +89,7 @@ broom.mixed::tidy(m, effects = "ran_vals") |>
   subset(level == "308")
 ```
 
+Sidenote: Maybe I should have said SD instead of SE? The terminology is hard.
 
 ### Forwarding a function definition into a knitr code chunk
 
